@@ -68,12 +68,12 @@ with mp_pose.Pose(min_tracking_confidence=0.5, min_detection_confidence=0.5) as 
 
             # angle
             angle = calc_angle(l_hip, l_knee, l_heel)
-            # angle_l = calc_angle(l_hip, l_knee, l_heel)
-            # angle_r = calc_angle(r_hip, r_knee, r_heel)
-            # if angle_l < angle_r:
-            #     angle = angle_l
-            # else:
-            #     angle = angle_r
+            angle_l = calc_angle(l_hip, l_knee, l_heel)
+            angle_r = calc_angle(r_hip, r_knee, r_heel)
+            if angle_l < angle_r:
+                angle = angle_l
+            else:
+                angle = angle_r
 
             # reps
             # if angle > 150:
