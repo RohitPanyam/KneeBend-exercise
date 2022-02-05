@@ -2,21 +2,6 @@ import mediapipe as mp
 import cv2
 import numpy as np
 import time
-import threading
-
-
-def countdown(time_sec):
-    while time_sec:
-        mins, secs = divmod(time_sec, 60)
-        timeformat = '{:02d}:{:02d}'.format(mins, secs)
-        print(timeformat, end='\r')
-        time.sleep(1)
-        time_sec -= 1
-        print(time_sec)
-
-    global lock
-    lock = 0
-    print("Done")
 
 
 def calc_angle(a, b, c):  # a-first(hip), b-center(knee), c-last(heel)
@@ -46,7 +31,7 @@ reps = 0
 status = None
 lock = 0
 
-with mp_pose.Pose(min_tracking_confidence=0.5, min_detection_confidence=0.5) as pose:
+with mp_pose.Pose(min_tracking_confidence=0.7, min_detection_confidence=0.5) as pose:
     sec = 0
     start = None
     end = None
@@ -60,7 +45,7 @@ with mp_pose.Pose(min_tracking_confidence=0.5, min_detection_confidence=0.5) as 
         try:
             landmarks = result.pose_landmarks.landmark
 
-            # check the leg
+            # check the legs
             l_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP].y]
             l_knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE].x, landmarks[mp_pose.PoseLandmark.LEFT_KNEE].y]
             l_heel = [landmarks[mp_pose.PoseLandmark.LEFT_HEEL].x, landmarks[mp_pose.PoseLandmark.LEFT_HEEL].y]
@@ -69,7 +54,13 @@ with mp_pose.Pose(min_tracking_confidence=0.5, min_detection_confidence=0.5) as 
             r_heel = [landmarks[mp_pose.PoseLandmark.RIGHT_HEEL].x, landmarks[mp_pose.PoseLandmark.RIGHT_HEEL].y]
 
             # angle
-            angle = calc_angle(l_hip, l_knee, l_heel)
+            # angle = calc_angle(l_hip, l_knee, l_heel)
+            angle_l = calc_angle(l_hip, l_knee, l_heel)
+            angle_r = calc_angle(r_hip, r_knee, r_heel)
+            if angle_l < angle_r:
+                angle = angle_l
+            else:
+                angle = angle_r
 
             # reps
             if angle < 120:
@@ -85,12 +76,12 @@ with mp_pose.Pose(min_tracking_confidence=0.5, min_detection_confidence=0.5) as 
 
             if angle > 160 and status == "yes":
                 status = "no"
-                print(reps)
+                # print(reps)
 
                 if lock == 1:
                     end = time.time()
                     sec = round(end) - round(start)
-                    print(sec)
+                    # print(sec)
                     if sec >=8:
                         start = end - start
                         lock = 0
