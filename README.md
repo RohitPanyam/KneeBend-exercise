@@ -1,7 +1,7 @@
 # KneeBend-exercise
 
 This code is made to help in assisting during a knee bending excersie
-It also has feedback information displayed on teh screen.
+It also has feedback information displayed on the screen.
 
 ## How to Run
 - clone the repo or download the final.py
